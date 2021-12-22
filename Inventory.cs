@@ -1,52 +1,119 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Assertions;
 
-// Assumes item names are unique
-public class Inventory : MonoBehaviour, IPublisher
+public class Inventory : MonoBehaviour, ISlotHandler
 {
-	public Dictionary<string, ItemStack> items = new Dictionary<string, ItemStack>();
-	public List<ISubscriber> subscribers = new List<ISubscriber>();
+	// Dictionary of Inventory Items
+	// Uses new UI only slot to display items
+	public SortedList<string, ItemStack> _items = new SortedList<string, ItemStack>();
+	MouseCursor _mouse;
+	ISlot[] _slots;
+
+	void Start()
+	{
+		_slots = GetComponentsInChildren<ISlot>();
+		_mouse = FindObjectOfType<MouseCursor>();
+		int i = 0;
+		foreach (var slot in _slots)
+		{
+			slot.SetHandler(this);
+			slot.SlotNum = i;
+			i += 1;
+		}
+	}
 
 	public void Add(ItemStack itemStack)
 	{
 		var name = itemStack.Item.name;
 		var count = itemStack.Count;
 
-		if (!items.ContainsKey(name))
+		if (!_items.ContainsKey(name))
 		{
-			items[name] = itemStack;
+			_items[name] = itemStack;
 		}
 		else
 		{
-			items[name] += itemStack;
+			_items[name] += itemStack;
 		}
-		Notify();
+		UpdateUI();
 	}
 
-	public void LogContents()
+	public void Remove(ItemStack itemStack)
 	{
-		foreach (var keyVal in items)
+		var name = itemStack.Item.name;
+		var count = itemStack.Count;
+
+		if (_items.ContainsKey(name))
 		{
-			Debug.Log($"{keyVal.Key},\t{keyVal.Value}");
+			if (count >= _items[name].Count)
+			{
+				_items.Remove(name);
+			}
+			else
+			{
+				_items[name] -= itemStack;
+			}
 		}
+		UpdateUI();
 	}
 
-	public void AddSubscriber(ISubscriber subscriber)
-	{
-		subscribers.Add(subscriber);
-	}
 
-	public void Notify()
+	public void UpdateUI()
 	{
-		foreach(var subscriber in subscribers)
+		int i = 0;
+		foreach (var keyVal in _items)
 		{
-			subscriber.UpdateFromPublisher(this);
+			_slots[i].SetSlot(keyVal.Value.Item.icon, keyVal.Value.Count);
+			i += 1;
+		}
+		while (i < _slots.Length)
+		{
+			if (_slots[i].IsEmpty)
+			{
+				break;
+			}
+			_slots[i].ClearSlot();
+			i += 1;
 		}
 	}
 
-	public void RemoveSubscriber(ISubscriber subscriber)
+	public void SlotClicked(ISlot slot, PointerEventData eventData)
 	{
-		subscribers.Remove(subscriber);
+		// print($"Slot Clicked {slot} {eventData}");
+
+		try
+		{
+			ItemStack ourItem = _items.ElementAt(slot.SlotNum).Value;
+			var item = _mouse.GetItem();
+			if (item != null)
+			{
+				// full hand full slot
+				var temp = _mouse.GetItem();
+				_mouse.ClearItem();
+				Add(temp);
+			}
+			// empty hand full slot
+			_mouse.SetItem(ourItem);
+			Remove(ourItem);
+
+		}
+		catch (ArgumentOutOfRangeException e)
+		{
+			// empty slot
+			var item = _mouse.GetItem();
+			if (item == null)
+			{
+				return; // empty hand and empty slot just return
+			}
+
+			// full hand empty slot
+			Add(item);
+			_mouse.ClearItem();
+			return;
+		}
 	}
 }

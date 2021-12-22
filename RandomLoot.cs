@@ -39,7 +39,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 
 	void Start()
 	{
-		inventory = GameObject.Find("GameInstance").GetComponent<Inventory>();
+		inventory = FindObjectOfType<Inventory>();
 	}
 
 
