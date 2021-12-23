@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Assertions;
 
+
 public class Crafting : MonoBehaviour, ISlotHandler
 {
-	const int OutputSlot = 9; 
+	int _outputSlot; 
 	MouseCursor _mouse;
-	ItemStack[] _items = new ItemStack[10];
+	ItemStack[] _items;
 	ISlot[] _slots;
 	CraftingRecipes _craftingRecipes;
 
 	void Start()
 	{
 		_slots = GetComponentsInChildren<ISlot>();
+		_items = new ItemStack[_slots.Length];
+		_outputSlot = _slots.Length - 1;
 		_mouse = FindObjectOfType<MouseCursor>();
 		_craftingRecipes = FindObjectOfType<CraftingRecipes>();
 		int i = 0;
@@ -24,11 +28,44 @@ public class Crafting : MonoBehaviour, ISlotHandler
 			slot.SlotNum = i;
 			i += 1;
 		}
+		SmallTable();
+	}
+
+	public void SmallTable()
+	{
+		Transform(new int[] { 0, 1, 2, 5, 8 }, 400, 200, 125, 125);
+	}
+
+	public void BigTable()
+	{
+		Transform(new int[] { }, 450, 250, 185, 185);
+	}
+
+	void Transform(int[] slotsDisabled, int width, int height, int tableWidth, int tableHeight)
+	{
+		var reactants = GameObject.Find("Reactants");
+		var rect = reactants.GetComponent<RectTransform>();
+
+		rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tableWidth);
+		rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tableHeight);
+
+		foreach (var slot in _slots)
+		{
+			slot.SetActive(true);
+		}
+		foreach (int i in slotsDisabled)
+		{
+			_slots[i].SetActive(false);
+		}
+
+		var rect2 = gameObject.GetComponent<RectTransform>();
+		rect2.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+		rect2.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 	}
 
 	public void Add(ItemStack itemStack, int slotNum)
 	{
-		Assert.AreNotEqual(slotNum, OutputSlot, "Must call SetOutput to set output slot");
+		Assert.AreNotEqual(slotNum, _outputSlot, "Must call SetOutput to set output slot");
 
 		_items[slotNum] = itemStack;
 
@@ -39,7 +76,7 @@ public class Crafting : MonoBehaviour, ISlotHandler
 	public ItemStack Remove(int slotNum)
 	{
 		// Assert.AreNotEqual(slotNum, OutputSlot, "Must call Craft to remove from output slot");
-		if (slotNum == OutputSlot)
+		if (slotNum == _outputSlot)
 		{
 			return Craft();
 		}
@@ -53,8 +90,8 @@ public class Crafting : MonoBehaviour, ISlotHandler
 
 	public ItemStack Craft()
 	{
-		var temp = _items[OutputSlot];
-		_items[OutputSlot] = null;
+		var temp = _items[_outputSlot];
+		_items[_outputSlot] = null;
 		ConsumeIngredients();
 		UpdateUI();
 		return temp;
@@ -62,13 +99,13 @@ public class Crafting : MonoBehaviour, ISlotHandler
 
 	public void SetOutput(ItemStack itemStack)
 	{
-		_items[OutputSlot] = itemStack;
+		_items[_outputSlot] = itemStack;
 		UpdateUI();
 	}
 
 	public void ConsumeIngredients()
 	{
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < _items.Length; i++)
 		{
 			if (_items[i] != null)
 			{
@@ -86,9 +123,16 @@ public class Crafting : MonoBehaviour, ISlotHandler
 	public string HashIngredients()
 	{
 		string hash = "";
-		for (int i=0; i<9; i++)
+		for (int i = 0; i < 9; i++)
 		{
-			hash += _items[i]?.Item.name + ";";
+			try
+			{
+				hash += _items[i]?.Item.name + ';';
+			}
+			catch (IndexOutOfRangeException)
+			{
+				hash += ';';
+			}
 		}
 		return hash;
 	}
@@ -146,8 +190,13 @@ public class Crafting : MonoBehaviour, ISlotHandler
 
 	public void LeftClickWithMouse(ISlot slot)
 	{
-		if (slot.SlotNum == OutputSlot && _items[slot.SlotNum] != null)
+		if (slot.SlotNum == _outputSlot)
 		{
+			if (_items[slot.SlotNum] == null)
+			{
+				return;
+			}
+
 			var temp1 = _mouse.GetItem();
 			var temp2 = _items[slot.SlotNum];
 			if (!_mouse.IsEmpty && temp1.Item.name == temp2.Item.name)
@@ -197,7 +246,7 @@ public class Crafting : MonoBehaviour, ISlotHandler
 
 	public void RightClickWithMouse(ISlot slot)
 	{
-		if (slot.SlotNum == OutputSlot)
+		if (slot.SlotNum == _outputSlot)
 		{
 			return;
 		}

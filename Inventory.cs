@@ -10,6 +10,9 @@ public class Inventory : MonoBehaviour, ISlotHandler
 	// Dictionary of Inventory Items
 	// Uses new UI only slot to display items
 	public SortedList<string, ItemStack> _items = new SortedList<string, ItemStack>();
+
+	public event EventHandler<ItemStack> ItemAdded;
+
 	MouseCursor _mouse;
 	ISlot[] _slots;
 
@@ -39,6 +42,7 @@ public class Inventory : MonoBehaviour, ISlotHandler
 		{
 			_items[name] += itemStack;
 		}
+		OnItemAdded(itemStack);
 		UpdateUI();
 	}
 
@@ -59,6 +63,11 @@ public class Inventory : MonoBehaviour, ISlotHandler
 			}
 		}
 		UpdateUI();
+	}
+
+	protected virtual void OnItemAdded(ItemStack itemStack)
+	{
+		ItemAdded?.Invoke(this, itemStack);
 	}
 
 

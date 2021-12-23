@@ -48,7 +48,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 		var lootcrate = ChooseLoot();
 		foreach (ItemStack item in lootcrate)
 		{
-			Debug.Log(item);
+			//Debug.Log(item);
 			_inventory.Add(item);
 		}
 	}

@@ -37,6 +37,11 @@ public class Slot : MonoBehaviour, IPointerClickHandler, ISlot
 		_slotHandler = slotHandler;
 	}
 
+	public void SetActive(bool active)
+	{
+		gameObject.SetActive(active);
+	}
+
 	void Start()
 	{
 		Assert.IsNotNull(_image, $"must set image for {this}");

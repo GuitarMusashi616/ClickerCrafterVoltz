@@ -9,4 +9,5 @@ public interface ISlot
 	void SetHandler(ISlotHandler slotHandler);
 	bool IsEmpty { get;}
 	int SlotNum { get; set; }
+	void SetActive(bool active);
 }
