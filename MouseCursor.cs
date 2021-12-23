@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 public class MouseCursor : MonoBehaviour
 {
 
-	public Slot floatingSlot;
+	public Slot _floatingSlot;
 
 	ItemStack _itemStack;
 
@@ -14,7 +14,7 @@ public class MouseCursor : MonoBehaviour
 	public void SetItem(ItemStack itemStack)
 	{
 		_itemStack = itemStack;
-		floatingSlot.SetSlot(_itemStack.Item.icon, _itemStack.Count);
+		_floatingSlot.SetSlot(_itemStack.Item.icon, _itemStack.Count);
 	}
 
 	public ItemStack GetItem()
@@ -25,7 +25,28 @@ public class MouseCursor : MonoBehaviour
 	public void ClearItem()
 	{
 		_itemStack = null;
-		floatingSlot.ClearSlot();
+		_floatingSlot.ClearSlot();
+	}
+
+	public ItemStack DropItem()
+	{
+		// drops one from item stack
+		if (_itemStack != null)
+		{
+			if (_itemStack.Count > 1)
+			{
+				_itemStack.Count -= 1;
+				SetItem(_itemStack);
+				return new ItemStack(_itemStack.Item, 1);
+			}
+			else
+			{
+				var temp = _itemStack;
+				ClearItem();
+				return temp;
+			}
+		}
+		return null;
 	}
 
 	public bool IsEmpty
@@ -33,17 +54,16 @@ public class MouseCursor : MonoBehaviour
 		get => _itemStack == null;
 	}
 
-
 	void Start()
 	{
-		Assert.IsNotNull(floatingSlot, $"floatingSlot in {this} cannot be null");
+		Assert.IsNotNull(_floatingSlot, $"floatingSlot in {this} cannot be null");
 	}
 
 	void SetFloatingSlotToCursor()
 	{
-		var rt = (RectTransform)floatingSlot.transform;
+		var rt = (RectTransform)_floatingSlot.transform;
 		var vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y + (rt.rect.height / 2));
-		floatingSlot.transform.position = vec;
+		_floatingSlot.transform.position = vec;
 	}
 
 	// Update is called once per frame

@@ -99,9 +99,8 @@ public class Inventory : MonoBehaviour, ISlotHandler
 			// empty hand full slot
 			_mouse.SetItem(ourItem);
 			Remove(ourItem);
-
 		}
-		catch (ArgumentOutOfRangeException e)
+		catch (ArgumentOutOfRangeException)
 		{
 			// empty slot
 			var item = _mouse.GetItem();

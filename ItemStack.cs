@@ -13,7 +13,7 @@ public class ItemStack: ICloneable
 	}
 
 	public Item Item { get;}
-	public int Count { get;}
+	public int Count { get; set; }
 
 	public object Clone()
 	{

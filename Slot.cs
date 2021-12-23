@@ -13,6 +13,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler, ISlot
 	public Image _image;
 	public Text _text;
 	public ISlotHandler _slotHandler;
+
 	public bool IsEmpty { get; private set; } = true;
 	public int SlotNum { get; set; }
 	
@@ -55,7 +56,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler, ISlot
 
 	void SetCount(int count)
 	{
-		_text.text = count.ToString();
+		_text.text = count==1? string.Empty : count.ToString();
 	}
 
 	void ClearCount()

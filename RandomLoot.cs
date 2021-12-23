@@ -7,20 +7,19 @@ using UnityEngine.Assertions;
 public class RandomLoot : MonoBehaviour, IPointerDownHandler
 {
 	// holds a dictionary of item and count
-	[SerializeField]
-	public List<Item> potentialPrizes = new List<Item>();
-	public int prizePicks = 1;
-	Inventory inventory;
+	public List<Item> _potentialPrizes = new List<Item>();
+	public int _prizePicks = 1;
+	Inventory _inventory;
 
 	public List<ItemStack> ChooseLoot()
 	{
-		Assert.IsTrue(potentialPrizes.Count > 0, "cannot pick random loot from empty list");
+		Assert.IsTrue(_potentialPrizes.Count > 0, "cannot pick random loot from empty list");
 		var lootcrate = new List<ItemStack>();
 		var itemsChosen = new Dictionary<int, int>();
 
-		for (int i=0; i<prizePicks; i++)
+		for (int i=0; i<_prizePicks; i++)
 		{
-			var itemNum = Random.Range(0, potentialPrizes.Count);
+			var itemNum = Random.Range(0, _potentialPrizes.Count);
 			if (!itemsChosen.ContainsKey(itemNum))
 			{
 				itemsChosen.Add(itemNum, 0);
@@ -30,7 +29,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 
 		foreach (var keyVal in itemsChosen)
 		{
-			Item loot = potentialPrizes[keyVal.Key];
+			Item loot = _potentialPrizes[keyVal.Key];
 			lootcrate.Add(new ItemStack(loot, keyVal.Value));
 		}
 
@@ -39,7 +38,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 
 	void Start()
 	{
-		inventory = FindObjectOfType<Inventory>();
+		_inventory = FindObjectOfType<Inventory>();
 	}
 
 
@@ -50,7 +49,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 		foreach (ItemStack item in lootcrate)
 		{
 			Debug.Log(item);
-			inventory.Add(item);
+			_inventory.Add(item);
 		}
 	}
 }
