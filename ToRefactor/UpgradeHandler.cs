@@ -5,52 +5,51 @@ using UnityEngine;
 
 public class UpgradeHandler : MonoBehaviour
 {
-	Inventory _inventory;
-	Crafting _crafting;
+	NewInventoryModel _inventory;
+	TransformCraftingGrid _crafting;
 
 	public List<GameObject> _buttons = new List<GameObject>();
 	public List<Tool> _toolList = new List<Tool>();
 
 	Dictionary<string, Tool> _tools = new Dictionary<string, Tool>();
-	//public List<String> _buttonItemNames = new List<string>();
 	Dictionary<string, GameObject> _toggleables = new Dictionary<string, GameObject>();
-	//Dictionary<string, Delegate> _upgradeTriggers = new Dictionary<string, Delegate>();
 
-	void ToggleAndRemove(string buttonName, ItemStack item)
+	void ToggleAndRemove(string buttonName, string itemName)
 	{
 		_toggleables[buttonName].SetActive(true);
-		_inventory.Remove(item);
+		_inventory.Remove(itemName, 1);
 	}
 
-	void NewTool(string toolName, Tool.Material material, ItemStack item)
+	void NewTool(string toolName, Material material, string itemName)
 	{
-		_inventory.Remove(item);
-		_tools[toolName].SetMaterial(material);
+		_inventory.Remove(itemName, 1);
+		_tools[toolName].Material = material;
 	}
-
-
 
 	void Start()
 	{
-		_crafting = FindObjectOfType<Crafting>();
-
-		_inventory = FindObjectOfType<Inventory>();
+		_crafting = FindObjectOfType<TransformCraftingGrid>();
+		_inventory = FindObjectOfType<NewInventoryModel>();
 		_inventory.ItemAdded += NewItem;
 
-		
-		foreach (var button in _buttons)
+		SetupButtons();
+		SetupTools();
+	}
+
+	void SetupButtons()
+	{
+		foreach(var button in _buttons)
 		{
 			_toggleables[button.name] = button;
 		}
+	}
 
-		
+	void SetupTools()
+	{
 		foreach (var tool in _toolList)
 		{
 			_tools[tool.name] = tool;
-			print(tool.name);
 		}
-
-
 	}
 
 
@@ -60,48 +59,49 @@ public class UpgradeHandler : MonoBehaviour
 
 	// gets update from inventory, if achievement item then consume item and change menu
 	void NewItem(object sender, ItemStack itemStack)
-	{	
-		switch (itemStack.Item.name)
+	{
+		string itemName = itemStack.Item.name;
+		switch (itemName)
 		{
 			case "Crafting Table":
-				ToggleAndRemove("CraftingButton", itemStack);
+				ToggleAndRemove("CraftingButton", itemName);
 				_crafting.BigTable();
 				break;
 
 			case "Furnace":
-				ToggleAndRemove("FurnaceButton", itemStack);
+				ToggleAndRemove("FurnaceButton", itemName);
 				break;
 
 			case "Wooden Sword":
-				NewTool("Sword", Tool.Material.Wood, itemStack);
+				NewTool("Sword", Material.Wood, itemName);
 				break;
 
 			case "Wooden Pickaxe":
-				NewTool("Pickaxe", Tool.Material.Wood, itemStack);
+				NewTool("Pickaxe", Material.Wood, itemName);
 				break;
 
 			case "Wooden Axe":
-				NewTool("Axe", Tool.Material.Wood, itemStack);
+				NewTool("Axe", Material.Wood, itemName);
 				break;
 
 			case "Wooden Shovel":
-				NewTool("Shovel", Tool.Material.Wood, itemStack);
+				NewTool("Shovel", Material.Wood, itemName);
 				break;
 
 			case "Stone Sword":
-				NewTool("Sword", Tool.Material.Stone, itemStack);
+				NewTool("Sword", Material.Stone, itemName);
 				break;
 
 			case "Stone Pickaxe":
-				NewTool("Pickaxe", Tool.Material.Stone, itemStack);
+				NewTool("Pickaxe", Material.Stone, itemName);
 				break;
 
 			case "Stone Axe":
-				NewTool("Axe", Tool.Material.Stone, itemStack);
+				NewTool("Axe", Material.Stone, itemName);
 				break;
 
 			case "Stone Shovel":
-				NewTool("Shovel", Tool.Material.Stone, itemStack);
+				NewTool("Shovel", Material.Stone, itemName);
 				break;
 		}
 	}

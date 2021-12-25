@@ -21,14 +21,19 @@ public class Crafting : MonoBehaviour, ISlotHandler
 		_outputSlot = _slots.Length - 1;
 		_mouse = FindObjectOfType<MouseCursor>();
 		_craftingRecipes = FindObjectOfType<CraftingRecipes>();
-		int i = 0;
+		SetupSlots();
+		SmallTable();
+	}
+
+	void SetupSlots()
+	{
+		// int i = 0;
 		foreach (var slot in _slots)
 		{
 			slot.SetHandler(this);
-			slot.SlotNum = i;
-			i += 1;
+			// slot.SlotNum = i;
+			// i += 1;
 		}
-		SmallTable();
 	}
 
 	public void SmallTable()
@@ -109,7 +114,7 @@ public class Crafting : MonoBehaviour, ISlotHandler
 		{
 			if (_items[i] != null)
 			{
-				_items[i].Count -= 1;
+				_items[i] -= 1;
 				if (_items[i].Count < 1)
 				{
 					_items[i] = null;
@@ -156,14 +161,20 @@ public class Crafting : MonoBehaviour, ISlotHandler
 	{
 		for (int i=0; i<_items.Length; i++)
 		{
-			var item = _items[i];
-			if (item != null)
+			try
 			{
-				_slots[i].SetSlot(item.Item.icon, item.Count);
+				var item = _items[i];
+				if (item == null)
+				{
+					_slots[i].ClearSlot();
+				} else
+				{
+					_slots[i].SetSlot(item.Item.icon, item.Count);
+				}
 			}
-			else
+			catch (IndexOutOfRangeException)
 			{
-				_slots[i].ClearSlot();
+
 			}
 		}
 	}
@@ -258,13 +269,13 @@ public class Crafting : MonoBehaviour, ISlotHandler
 			var temp2 = _items[slot.SlotNum];
 			if (temp1.Item.name == temp2.Item.name)
 			{
-				Add(_mouse.DropItem() + temp2, slot.SlotNum);
+				Add(_mouse.RemoveItem(1) + temp2, slot.SlotNum);
 			}
 		}
 		else if (!_mouse.IsEmpty && _items[slot.SlotNum] == null)
 		{
 			// full hand, empty slot
-			Add(_mouse.DropItem(), slot.SlotNum);
+			Add(_mouse.RemoveItem(1), slot.SlotNum);
 		}
 		else if (_mouse.IsEmpty && _items[slot.SlotNum] != null)
 		{
@@ -276,7 +287,7 @@ public class Crafting : MonoBehaviour, ISlotHandler
 				return;
 			}
 			int amount_to_take = (int) Math.Ceiling(temp.Count / 2f);
-			temp.Count -= amount_to_take;
+			temp -= amount_to_take;
 			_mouse.SetItem(new ItemStack(temp.Item, amount_to_take));
 			Add(temp, slot.SlotNum);
 		}
@@ -295,29 +306,5 @@ public class Crafting : MonoBehaviour, ISlotHandler
 				RightClickWithMouse(slot);
 				break;
 		}
-		
-
-		//if (_items[slot.SlotNum] == null)
-		//{
-			
-		//	if (_mouse.IsEmpty)
-		//	{
-		//		// slot empty and hand empty
-		//		return;
-		//	}
-		//	// slot empty hand full
-		//	ItemStack item = _mouse.GetItem();
-		//	_mouse.ClearItem();
-		//	Add(item, slot.SlotNum);
-		//	return;
-		//}
-		//// slot full hand empty
-		//if (_mouse.IsEmpty)
-		//{
-		//	_mouse.SetItem(Remove(slot.SlotNum));
-		//	return;
-		//}
-		//// slot full hand full
-		//SwapWithMouse(slot);
 	}
 }

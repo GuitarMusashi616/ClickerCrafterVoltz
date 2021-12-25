@@ -20,12 +20,17 @@ public class Inventory : MonoBehaviour, ISlotHandler
 	{
 		_slots = GetComponentsInChildren<ISlot>();
 		_mouse = FindObjectOfType<MouseCursor>();
-		int i = 0;
+		SetupSlots();
+	}
+
+	void SetupSlots()
+	{
+		// int i = 0;
 		foreach (var slot in _slots)
 		{
 			slot.SetHandler(this);
-			slot.SlotNum = i;
-			i += 1;
+			// slot.SlotNum = i;
+			// i += 1;
 		}
 	}
 
@@ -89,6 +94,27 @@ public class Inventory : MonoBehaviour, ISlotHandler
 			i += 1;
 		}
 	}
+
+	//void EmptyHandEmptySlot()
+	//{
+
+	//}
+
+	//void EmptyHandFullSlot()
+	//{
+
+	//}
+
+	//void FullHandEmptySlot()
+	//{
+
+	//}
+
+	//void FullHandFullSlot()
+	//{
+
+	//}
+
 
 	public void SlotClicked(ISlot slot, PointerEventData eventData)
 	{

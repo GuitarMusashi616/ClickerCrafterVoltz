@@ -8,6 +8,6 @@ public interface ISlot
 	void ClearSlot();
 	void SetHandler(ISlotHandler slotHandler);
 	bool IsEmpty { get;}
-	int SlotNum { get; set; }
+	int SlotNum { get;}
 	void SetActive(bool active);
 }

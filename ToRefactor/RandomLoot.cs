@@ -9,7 +9,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 	// holds a dictionary of item and count
 	public List<Item> _potentialPrizes = new List<Item>();
 	public int _prizePicks = 1;
-	Inventory _inventory;
+	NewInventoryModel _inventory;
 
 	public List<ItemStack> ChooseLoot()
 	{
@@ -38,7 +38,7 @@ public class RandomLoot : MonoBehaviour, IPointerDownHandler
 
 	void Start()
 	{
-		_inventory = FindObjectOfType<Inventory>();
+		_inventory = FindObjectOfType<NewInventoryModel>();
 	}
 
 

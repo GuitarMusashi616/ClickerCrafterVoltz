@@ -8,14 +8,14 @@ using UnityEngine.Assertions;
 public class Slot : MonoBehaviour, IPointerClickHandler, ISlot
 {
 	public ItemStack _itemStack;
-	public List<Item> _items;
 
 	public Image _image;
 	public Text _text;
 	public ISlotHandler _slotHandler;
+	public int _slotNum;
 
 	public bool IsEmpty { get; private set; } = true;
-	public int SlotNum { get; set; }
+	public int SlotNum { get => _slotNum;  }
 	
 
 	public void SetSlot(Sprite sprite, int count)
