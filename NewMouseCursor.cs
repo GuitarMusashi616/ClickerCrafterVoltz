@@ -72,7 +72,7 @@ public class NewMouseCursor : MonoBehaviour
 	void OnItemAdded()
 	{
 		Assert.IsNotNull(_itemSlot, "Item slot should not be null after adding to it");
-		_floatingSlot.SetSlot(_itemSlot.Item.icon, _itemSlot.Count);
+		_floatingSlot.SetSlot(_itemSlot.Item.Sprite, _itemSlot.Count);
 	}
 
 	void OnItemRemoved()
@@ -82,7 +82,7 @@ public class NewMouseCursor : MonoBehaviour
 			_floatingSlot.ClearSlot();
 			return;
 		}
-		_floatingSlot.SetSlot(_itemSlot.Item.icon, _itemSlot.Count);
+		_floatingSlot.SetSlot(_itemSlot.Item.Sprite, _itemSlot.Count);
 	}
 
 	void SetFloatingSlotToCursor()
