@@ -1,5 +1,5 @@
 # ClickerCrafterVoltz
 If minecraft was a cookie clicker...
 
-Play the game here!
+Play the game here!  
 https://guitarmusashi.itch.io/clickercrafter
